@@ -121,5 +121,5 @@ jobs:
         git config --local user.name "FUCK"
         git add -f ./
         git commit -m "firmware"
-        git push --force --quiet https://${secrets.P_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware
+        git push --force --quiet https://${P_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware
         
