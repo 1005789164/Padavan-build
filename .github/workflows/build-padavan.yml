@@ -39,7 +39,6 @@ jobs:
         mkdir -p toolchain-3.4.x
         wget https://github.com/hanwckf/padavan-toolchain/releases/download/v1.1/mipsel-linux-uclibc.tar.xz
         tar -xvf mipsel-linux-uclibc.tar.xz -C toolchain-3.4.x
-        mkdir -p /opt/images/        
     - name: Build Firmware
       env:
         TNAME: K2P
@@ -99,8 +98,9 @@ jobs:
         #########################################################################################
         sudo ./clear_tree
         sudo ./build_firmware_bkye $TNAME
-        cp -f images/*.trx /opt/images/
-        ls -al /opt/images/
+        mkdir -p $GITHUB_WORKSPACE/images
+        cp -f images/*.trx $GITHUB_WORKSPACE/images
+        ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
         echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
     - name: Upload to release
       uses: 1005789164/action-release@master
@@ -108,14 +108,14 @@ jobs:
         token: ${{ secrets.P_TOKEN }}
         gzip: false
         files: >
-          opt/images/*.trx
+          images/*.trx
         allow_override: true
     - name: Push firmware
       run: |
         mkdir -p firmware-branch
         cd firmware-branch
         git init
-        [ -e /opt/images/*.trx ] && cp /opt/images/*.trx ./
+        [ -e ../images/*.trx ] && cp ../images/*.trx ./
         ls -al
         git config --local user.email "fuck@github.com"
         git config --local user.name "FUCK"
