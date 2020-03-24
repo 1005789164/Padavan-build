@@ -32,6 +32,7 @@ jobs:
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev gcc-multilib
     - name: Clone source code
       run: |
+        pwd
         git clone --depth=1 https://github.com/chongshengB/rt-n56u.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         mkdir -p toolchain-3.4.x
@@ -42,7 +43,6 @@ jobs:
       env:
         TNAME: K2P
       run: |
-        pwd
         cd /opt/rt-n56u/trunk
         if [ ! -f configs/templates/$TNAME.config ] ; then
         echo "configs/templates/$TNAME.config not found "
@@ -98,7 +98,7 @@ jobs:
         #########################################################################################
         sudo ./clear_tree
         sudo ./build_firmware_bkye $TNAME
-        sudo mv -f images/*.trx /opt/images/
+        cp -f images/*.trx /opt/images/
         ls -al /opt/images/
         echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
     - name: Upload to release
