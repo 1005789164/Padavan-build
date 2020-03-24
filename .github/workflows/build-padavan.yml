@@ -111,6 +111,7 @@ jobs:
           images/*.trx
         allow_override: true
     - name: Push firmware
+      PUSH_TOKEN: ${{ secrets.P_TOKEN }}
       run: |
         mkdir -p firmware-branch
         cd firmware-branch
@@ -121,5 +122,5 @@ jobs:
         git config --local user.name "FUCK"
         git add -f ./
         git commit -m "firmware"
-        git push --force --quiet https://${P_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware
+        git push --force --quiet https://${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware
         
