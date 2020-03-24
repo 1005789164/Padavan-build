@@ -111,7 +111,8 @@ jobs:
           images/*.trx
         allow_override: true
     - name: Push firmware
-      PUSH_TOKEN: ${{ secrets.P_TOKEN }}
+      env:
+        PUSH_TOKEN: ${{ secrets.P_TOKEN }}
       run: |
         mkdir -p firmware-branch
         cd firmware-branch
