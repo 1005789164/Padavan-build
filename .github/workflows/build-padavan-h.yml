@@ -39,7 +39,7 @@ jobs:
         ls -al
     - name: Build Firmware
       env:
-        TNAME: K2P_nano-5.0
+        TNAME: K2P_nano
       run: |
         cd /opt/rt-n56u/trunk/configs/templates
         if [ ! -f $TNAME.config ] ; then
