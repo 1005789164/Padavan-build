@@ -1,0 +1,87 @@
+#修改TNAME: K2P-5.0 中的K2P-5.0为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
+name: Build Padavan
+
+on:
+#  release:
+#    types: [published]
+#  push:
+#    tags:
+#    - 'v*'
+#  branches: 
+#    - master
+#  schedule:
+#    - cron: 0 8 * * 5
+  watch:
+    types: [started]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
+        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
+        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
+    - name: Clone source code
+      run: |
+        git clone --depth=1 https://gitee.com/hanwckf/rt-n56u.git /opt/rt-n56u
+        cd /opt/rt-n56u/toolchain-mipsel
+        sh dl_toolchain.sh
+        pwd
+        ls -al
+    - name: Build Firmware
+      env:
+        TNAME: K2P_nano-5.0
+      run: |
+        cd /opt/rt-n56u/trunk/configs/templates
+        if [ ! -f $TNAME.config ] ; then
+        echo "configs/templates/$TNAME.config not found "
+        exit 1
+        fi
+        
+        #########################################################################################
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=.*/CONFIG_FIRMWARE_INCLUDE_CURL=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_NAPT66=.*/CONFIG_FIRMWARE_INCLUDE_NAPT66=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=.*/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=.*/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=y/' $TNAME.config
+        #########################################################################################
+        
+        cd /opt/rt-n56u/trunk
+        sudo ./clear_tree
+        sudo fakeroot ./build_firmware_modify $TNAME
+        mkdir -p $GITHUB_WORKSPACE/images
+        cp -f images/*.trx $GITHUB_WORKSPACE/images
+        ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
+        echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
+    - name: Upload to release
+      uses: 1005789164/action-release@master
+      with:
+        token: ${{ secrets.P_TOKEN }}
+        gzip: false
+        files: >
+          images/*.trx
+        allow_override: true
+    - name: Push firmware
+      env:
+        PUSH_TOKEN: ${{ secrets.P_TOKEN }}
+      run: |
+        mkdir -p firmware-branch
+        cd firmware-branch
+        git init
+        [ -e ../images/*.trx ] && cp ../images/*.trx ./
+        ls -al
+        git config --local user.email "fuck@github.com"
+        git config --local user.name "FUCK"
+        git add -f ./
+        git commit -m "firmware"
+        git push --force --quiet https://${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware
+        
