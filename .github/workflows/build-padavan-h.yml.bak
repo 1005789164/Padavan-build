@@ -32,7 +32,7 @@ jobs:
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
     - name: Clone source code
       run: |
-        git clone --depth=1 https://gitee.com/hanwckf/rt-n56u.git /opt/rt-n56u
+        git clone --depth=1 https://github.com/hanwckf/rt-n56u.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
         pwd
@@ -46,6 +46,7 @@ jobs:
         echo "configs/templates/$TNAME.config not found "
         exit 1
         fi
+        sed -i 's/\# CONFIG_DEFAULT_5G_PROFILE is not set/CONFIG_DEFAULT_5G_PROFILE=y/g' /opt/rt-n56u/trunk/configs/boards/K2P/kernel-3.4.x-5.0.config
         
         #########################################################################################
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=.*/CONFIG_FIRMWARE_INCLUDE_CURL=y/' $TNAME.config
