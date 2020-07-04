@@ -79,7 +79,7 @@ jobs:
         git init
         [ -e ../images/*.trx ] && cp ../images/*.trx ./
         ls -al
-        git config --local user.email "fuck@github.com"
+        git config --local user.email "FUCK@github.com"
         git config --local user.name "FUCK"
         git add -f ./
         git commit -m "firmware"
