@@ -37,7 +37,7 @@ jobs:
         sh dl_toolchain.sh
     - name: Build Firmware
       env:
-        TNAME: K2P_nano-5.0
+        TNAME: K2P_nano
       run: |
         cd /opt/rt-n56u/trunk
         if [ ! -f configs/templates/$TNAME.config ] ; then
