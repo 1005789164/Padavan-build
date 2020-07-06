@@ -54,7 +54,7 @@ jobs:
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=y/' .config
         
         sed -i 's/snds/sdns/g' user/smartdns/smartdns.sh
-        sed -i '/force-AAAA-SOA/a\else\nsed -i "/force-AAAA-SOA/d" $SMARTDNS_CONF' user/smartdns/smartdns.sh
+        sed -i '/dualstack-ip-selection yes/a\if [ $sdns_ipv6 -eq 1 ];then\nnvram set sdns_ipv6=0\nlogger -t "SmartDNS" "双栈IP优选不能与禁用IPV6解析同时开启..."\nfi' user/smartdns/smartdns.sh
         sed -i 's/snds/sdns/g' user/httpd/variables.c
         sed -i 's/snds/sdns/g' user/www/n56u_ribbon_fixed/Advanced_smartdns.asp
         sed -i 's/snds/sdns/g' user/shared/defaults.c
@@ -99,7 +99,7 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_CADDY=n" >> .config #在线文件管理服务
         echo "CONFIG_FIRMWARE_INCLUDE_CADDYBIN=n" >> .config #集成caddu执行文件，此文件有13M,请注意固件大小。如果不集成，会从网上下载下来执行，不影响正常使用
         echo "CONFIG_FIRMWARE_INCLUDE_ADGUARDHOME=n" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_SRELAY=n" >> .config #可以不集成
+        echo "CONFIG_FIRMWARE_INCLUDE_SRELAY=y" >> .config #可以不集成
         echo "CONFIG_FIRMWARE_INCLUDE_WYY=y" >> .config #网易云解锁
         echo "CONFIG_FIRMWARE_INCLUDE_WYYBIN=y" >> .config #网易云解锁GO版本执行文件（4M多）注意固件超大小,不集成会自动下载
         echo "CONFIG_FIRMWARE_INCLUDE_ZEROTIER=n" >> .config #zerotier ~1.3M
