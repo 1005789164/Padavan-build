@@ -44,6 +44,8 @@ jobs:
         chmod +x $GITHUB_WORKSPACE/diy.sh
         $GITHUB_WORKSPACE/diy.sh
         echo "::set-env name=TNAME::K2P_nano"
+    - name: Build Firmware2
+      run: |
         $GITHUB_WORKSPACE/diy.sh
         echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
     - name: Upload to release
