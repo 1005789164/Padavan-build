@@ -64,7 +64,7 @@ jobs:
         mkdir -p firmware-branch
         cd firmware-branch
         git init
-        [ -e ../images/*.trx ] && cp ../images/*.trx ./
+        [ "$(ls ../images)" != "" ] && cp ../images/*.trx ./
         ls -al
         git config --local user.email "FUCK@github.com"
         git config --local user.name "FUCK"
