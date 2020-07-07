@@ -40,14 +40,10 @@ jobs:
         TNAME: K2P_nano-5.0
       run: |
         cd /opt/rt-n56u/trunk
-        if [ ! -f configs/templates/$TNAME.config ] ; then
-        echo "configs/templates/$TNAME.config not found "
-        exit 1
-        fi
         mkdir -p $GITHUB_WORKSPACE/images
-        ../diy.sh
+        $GITHUB_WORKSPACE/diy.sh
         echo "::set-env name=TNAME::K2P_nano"
-        ../diy.sh
+        $GITHUB_WORKSPACE/diy.sh
         echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
     - name: Upload to release
       uses: 1005789164/action-release@master

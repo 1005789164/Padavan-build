@@ -1,4 +1,8 @@
 #!/bin/bash
+        if [ ! -f configs/templates/$TNAME.config ] ; then
+        echo "configs/templates/$TNAME.config not found "
+        exit 1
+        fi
         sudo ./clear_tree
 	  cp -f configs/templates/$TNAME.config .config
 	  
