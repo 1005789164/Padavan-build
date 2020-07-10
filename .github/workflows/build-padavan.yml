@@ -35,19 +35,50 @@ jobs:
         git clone --depth=1 https://github.com/chongshengB/rt-n56u.git /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
-    - name: Build Firmware
+    - name: Public diy
+      run: |
+        cd /opt/rt-n56u/trunk
+        ##################################################################################
+        ###K2P
+        sed -i 's/\# CONFIG_DEFAULT_5G_PROFILE is not set/CONFIG_DEFAULT_5G_PROFILE=y/g' configs/boards/K2P/kernel-3.4.x-5.0.config
+        ##################################################################################
+        ###SmartDNS
+        sed -i 's/snds/sdns/g' user/smartdns/smartdns.sh
+        sed -i '/dualstack-ip-selection yes/a\if [ $sdns_ipv6 -eq 1 ];then\nnvram set sdns_ipv6=0\nlogger -t "SmartDNS" "双栈IP优选不能与禁用IPV6解析同时开启..."\nfi' user/smartdns/smartdns.sh
+        sed -i 's/snds/sdns/g' user/httpd/variables.c
+        sed -i 's/snds/sdns/g' user/www/n56u_ribbon_fixed/Advanced_smartdns.asp
+        sed -i 's/snds/sdns/g' user/shared/defaults.c
+        ##################################################################################
+        ###AdGuardHome
+        sed -i 's@/usr/bin/adguardhome.sh@/usr/bin/AdGuardHome/adguardhome.sh@g' user/rc/services.c
+        sed -i 's@/usr/bin/adguardhome.sh@/usr/bin/AdGuardHome/adguardhome.sh@g' user/scripts/autostart.sh
+        sed -i 's@/usr/bin/@/usr/bin/AdGuardHome/@g' user/adguardhome/Makefile
+        sed -i '/\/usr\/bin\/AdGuardHome\/adguardhome.sh/i\\tmkdir -p $(ROMFSDIR)\/usr\/bin\/AdGuardHome' user/adguardhome/Makefile
+        sed -i '/\/usr\/bin\/AdGuardHome\/adguardhome.sh/a\ifeq ($(CONFIG_FIRMWARE_INCLUDE_ADGUARDHOMEBIN),y)' user/adguardhome/Makefile
+        sed -i '/ifeq ($(CONFIG_FIRMWARE_INCLUDE_ADGUARDHOMEBIN),y)/a\\t$(ROMFSINST) -p +x $(THISDIR)\/AdGuardHome \/usr\/bin\/AdGuardHome\/AdGuardHome\nendif' user/adguardhome/Makefile
+        cp -f $GITHUB_WORKSPACE/adguardhome.sh user/adguardhome/adguardhome.sh
+        ##################################################################################
+        
+        mkdir -p $GITHUB_WORKSPACE/images
+        chmod +x $GITHUB_WORKSPACE/k2p_diy.sh
+        chmod +x $GITHUB_WORKSPACE/xy_diy.sh
+    - name: Build Firmware K2P_nano-5.0
       env:
         TNAME: K2P_nano-5.0
       run: |
         cd /opt/rt-n56u/trunk
-        mkdir -p $GITHUB_WORKSPACE/images
-        chmod +x $GITHUB_WORKSPACE/diy.sh
-        $GITHUB_WORKSPACE/diy.sh
+        $GITHUB_WORKSPACE/k2p_diy.sh
         echo "::set-env name=TNAME::K2P_nano"
-    - name: Build Firmware2
+    - name: Build Firmware K2P_nano
       run: |
         cd /opt/rt-n56u/trunk
-        $GITHUB_WORKSPACE/diy.sh
+        $GITHUB_WORKSPACE/k2p_diy.sh
+        echo "::set-env name=TNAME::XY-C1"
+    - name: Build Firmware XY-C1
+      run: |
+        cd /opt/rt-n56u/trunk
+        cp -f $GITHUB_WORKSPACE/XY-C1.config configs/templates
+        $GITHUB_WORKSPACE/xy_diy.sh
         echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
     - name: Upload to release
       uses: 1005789164/action-release@master
