@@ -14,6 +14,11 @@ on:
   watch:
     types: [started]
 
+env:
+  K2P: false
+  XY-C1: true
+  TNAME: XY-C1
+
 jobs:
   build:
     runs-on: ubuntu-18.04
@@ -63,18 +68,19 @@ jobs:
         chmod +x $GITHUB_WORKSPACE/k2p_diy.sh
         chmod +x $GITHUB_WORKSPACE/xy_diy.sh
     - name: Build Firmware K2P_nano-5.0
-      env:
-        TNAME: K2P_nano-5.0
+      if: env.K2P == 'true'
       run: |
         cd /opt/rt-n56u/trunk
         $GITHUB_WORKSPACE/k2p_diy.sh
         echo "::set-env name=TNAME::K2P_nano"
     - name: Build Firmware K2P_nano
+      if: env.K2P == 'true'
       run: |
         cd /opt/rt-n56u/trunk
         $GITHUB_WORKSPACE/k2p_diy.sh
         echo "::set-env name=TNAME::XY-C1"
     - name: Build Firmware XY-C1
+      if: env.XY-C1 == 'true'
       run: |
         cd /opt/rt-n56u/trunk
         cp -f $GITHUB_WORKSPACE/XY-C1.config configs/templates
