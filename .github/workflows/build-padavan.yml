@@ -15,9 +15,9 @@ on:
     types: [started]
 
 env:
-  K2P: false
+  K2P: true
   XY-C1: true
-  TNAME: XY-C1
+  TNAME: K2P_nano-5.0
 
 jobs:
   build:
@@ -31,6 +31,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
         sudo apt-get update
         sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
         cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
@@ -85,7 +86,6 @@ jobs:
         cd /opt/rt-n56u/trunk
         cp -f $GITHUB_WORKSPACE/XY-C1.config configs/templates
         $GITHUB_WORKSPACE/xy_diy.sh
-        echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
     - name: Upload to release
       uses: 1005789164/action-release@master
       with:
