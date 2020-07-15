@@ -1,0 +1,24 @@
+name: Del Release
+
+on:
+  watch:
+    types: [started]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Del release
+      uses: 1005789164/action-delrelease@master
+      with:
+        token: ${{ secrets.P_TOKEN }}
+        name: >
+        2020.07.03
+        2020.07.05
+        2020.07.06
+        istag: true
+    
