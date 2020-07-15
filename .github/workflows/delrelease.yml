@@ -13,6 +13,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install unzip curl gperf gawk flex nano fakeroot \
+        python-docutils bzip2 gawk gettext unzip flex git git-core
+
     - name: Del release
       uses: 1005789164/action-delrelease@master
       with:
