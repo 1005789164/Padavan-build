@@ -15,6 +15,7 @@ on:
     types: [started]
 
 env:
+  RELEASE_TAG: Padavan-firmware
   K2P: true
   XY-C1: true
   TNAME: K2P_nano-5.0
@@ -31,7 +32,6 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
         sudo apt-get update
         sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
         cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
@@ -69,12 +69,6 @@ jobs:
         chmod +x $GITHUB_WORKSPACE/k2p_diy.sh
         chmod +x $GITHUB_WORKSPACE/xy_diy.sh
     - name: Build Firmware K2P_nano-5.0
-      if: env.K2P == 'true'
-      run: |
-        cd /opt/rt-n56u/trunk
-        $GITHUB_WORKSPACE/k2p_diy.sh
-        echo "::set-env name=TNAME::K2P_nano"
-    - name: Build Firmware K2P_nano
       if: env.K2P == 'true'
       run: |
         cd /opt/rt-n56u/trunk
