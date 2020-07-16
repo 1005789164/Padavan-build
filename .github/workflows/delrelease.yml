@@ -18,6 +18,9 @@ jobs:
       uses: 1005789164/action-delrelease@master
       with:
         token: ${{ secrets.P_TOKEN }}
-        name: 2020.07.03 2020.07.05 2020.07.06
-        istag: true
+        name: >
+        2020.07.03
+        2020.07.05
+        2020.07.06
+        istag: yes
     
