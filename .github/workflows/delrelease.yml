@@ -19,8 +19,8 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         name: >
-          2020.07.03
-          2020.07.05
+          2020.07.07
+          2020.07.08
           2020.07.06
         istag: yes
     
