@@ -14,9 +14,13 @@ on:
   watch:
     types: [started]
 
+env:
+  RELEASE_TAG: Padavan-firmware
+  TNAME: K2P_nano-5.0
+
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
@@ -38,8 +42,6 @@ jobs:
         pwd
         ls -al
     - name: Build Firmware
-      env:
-        TNAME: K2P_nano
       run: |
         cd /opt/rt-n56u/trunk/configs/templates
         if [ ! -f $TNAME.config ] ; then
@@ -62,18 +64,17 @@ jobs:
         mkdir -p $GITHUB_WORKSPACE/images
         cp -f images/*.trx $GITHUB_WORKSPACE/images
         ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
-        echo "::set-env name=RELEASE_TAG::"$(TZ=UTC-8 date +"%Y.%m.%d")""
     - name: Upload to release
       uses: 1005789164/action-release@master
       with:
-        token: ${{ secrets.P_TOKEN }}
+        token: ${{ secrets.ACTION_TOKEN }}
         gzip: false
         files: >
           images/*.trx
         allow_override: true
     - name: Push firmware
       env:
-        PUSH_TOKEN: ${{ secrets.P_TOKEN }}
+        PUSH_TOKEN: ${{ secrets.ACTION_TOKEN }}
       run: |
         mkdir -p firmware-branch
         cd firmware-branch

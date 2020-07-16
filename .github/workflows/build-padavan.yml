@@ -9,8 +9,8 @@ on:
 #    - 'v*'
 #  branches: 
 #    - master
-#  schedule:
-#    - cron: 0 8 * * 5
+  schedule:
+    - cron: 0 23 * * 5
   watch:
     types: [started]
 
@@ -22,7 +22,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
@@ -83,14 +83,14 @@ jobs:
     - name: Upload to release
       uses: 1005789164/action-release@master
       with:
-        token: ${{ secrets.P_TOKEN }}
+        token: ${{ secrets.ACTION_TOKEN }}
         gzip: false
         files: >
           images/*.trx
         allow_override: true
     - name: Push firmware
       env:
-        PUSH_TOKEN: ${{ secrets.P_TOKEN }}
+        PUSH_TOKEN: ${{ secrets.ACTION_TOKEN }}
       run: |
         mkdir -p firmware-branch
         cd firmware-branch
