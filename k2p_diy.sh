@@ -1,15 +1,15 @@
 #!/bin/bash
-	if [ ! -f configs/templates/$TNAME.config ] ; then
-	echo "configs/templates/$TNAME.config not found "
+	if [ ! -f configs/templates/$1.config ] ; then
+	echo "configs/templates/$1.config not found "
 	exit 1
 	fi
 	sudo ./clear_tree
-	cp -f configs/templates/$TNAME.config .config
+	cp -f configs/templates/$1.config .config
 	
 	#########################################################################################
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=.*/CONFIG_FIRMWARE_INCLUDE_CURL=y/' .config
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_NAPT66=.*/CONFIG_FIRMWARE_INCLUDE_NAPT66=y/' .config
-	sed -i 's/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=.*/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=y/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=.*/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=n/' .config
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=.*/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/' .config
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=y/' .config
 	#########################################################################################
@@ -38,12 +38,12 @@
 	echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y" >> .config #SS plus+
 	echo "CONFIG_FIRMWARE_INCLUDE_SSOBFS=n" >> .config # simple-obfs混淆插件
 	echo "CONFIG_FIRMWARE_INCLUDE_SSSERVER=y" >> .config #SS server
-	echo "CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=y" >> .config #DNSFORWARDER
+	echo "CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=n" >> .config #DNSFORWARDER
 	echo "CONFIG_FIRMWARE_INCLUDE_ADBYBY=n" >> .config #adbyby plus+
 	echo "CONFIG_FIRMWARE_INCLUDE_FRPC=n" >> .config #内网穿透FRPC
 	echo "CONFIG_FIRMWARE_INCLUDE_FRPS=n" >> .config #内网穿透FRPS
 	echo "CONFIG_FIRMWARE_INCLUDE_TUNSAFE=n" >> .config #TUNSAFE
-	echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=y" >> .config #阿里DDNS
+	echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=n" >> .config #阿里DDNS
 	echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y" >> .config #smartdns
 	echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN=y" >> .config #smartdns二进制文件
 	echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=y" >> .config #集成v2ray执行文件（3.8M左右)，如果不集成，会从网上下载下来执行，不影响正常使用
@@ -65,7 +65,7 @@
 	#echo "自定义项=y" >> .config
 	#########################################################################################
 	
-	sudo ./build_firmware_modify $TNAME 0
-	cp -f images/*.trx $GITHUB_WORKSPACE/images/$TNAME.trx
+	sudo ./build_firmware_modify $1 0
+	cp -f images/*.trx $GITHUB_WORKSPACE/images/$1.trx
 	ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
 	

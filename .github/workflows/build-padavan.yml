@@ -18,7 +18,6 @@ env:
   RELEASE_TAG: Padavan-firmware
   K2P: true
   XY-C1: true
-  TNAME: K2P_nano-5.0
 
 jobs:
   build:
@@ -72,14 +71,13 @@ jobs:
       if: env.K2P == 'true'
       run: |
         cd /opt/rt-n56u/trunk
-        $GITHUB_WORKSPACE/k2p_diy.sh
-        echo "::set-env name=TNAME::XY-C1"
+        $GITHUB_WORKSPACE/k2p_diy.sh K2P_nano-5.0
     - name: Build Firmware XY-C1
       if: env.XY-C1 == 'true'
       run: |
         cd /opt/rt-n56u/trunk
         cp -f $GITHUB_WORKSPACE/XY-C1.config configs/templates
-        $GITHUB_WORKSPACE/xy_diy.sh
+        $GITHUB_WORKSPACE/xy_diy.sh XY-C1
     - name: Upload to release
       uses: 1005789164/action-release@master
       with:

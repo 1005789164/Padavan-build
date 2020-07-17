@@ -1,10 +1,10 @@
 #!/bin/bash
-	if [ ! -f configs/templates/$TNAME.config ] ; then
-	echo "configs/templates/$TNAME.config not found "
+	if [ ! -f configs/templates/$1.config ] ; then
+	echo "configs/templates/$1.config not found "
 	exit 1
 	fi
 	sudo ./clear_tree
-	cp -f configs/templates/$TNAME.config .config
+	cp -f configs/templates/$1.config .config
 	
 	#########################################################################################
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=.*/CONFIG_FIRMWARE_INCLUDE_CURL=y/' .config
@@ -65,7 +65,7 @@
 	#echo "自定义项=y" >> .config
 	#########################################################################################
 	
-	sudo ./build_firmware_modify $TNAME 0
-	cp -f images/*.trx $GITHUB_WORKSPACE/images/$TNAME.trx
+	sudo ./build_firmware_modify $1 0
+	cp -f images/*.trx $GITHUB_WORKSPACE/images/$1.trx
 	ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
 	
