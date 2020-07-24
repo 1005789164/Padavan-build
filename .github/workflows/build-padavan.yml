@@ -62,7 +62,7 @@ jobs:
         sed -i '/\/usr\/bin\/AdGuardHome\/adguardhome.sh/a\ifeq ($(CONFIG_FIRMWARE_INCLUDE_ADGUARDHOMEBIN),y)' user/adguardhome/Makefile
         sed -i '/ifeq ($(CONFIG_FIRMWARE_INCLUDE_ADGUARDHOMEBIN),y)/a\\t$(ROMFSINST) -p +x $(THISDIR)\/AdGuardHome \/usr\/bin\/AdGuardHome\/AdGuardHome\nendif' user/adguardhome/Makefile
         ##################################################################################
-        cp -R $GITHUB_WORKSPACE/trunk/ ./
+        cp -Rf $GITHUB_WORKSPACE/trunk/* ./
         
         mkdir -p $GITHUB_WORKSPACE/images
         chmod +x $GITHUB_WORKSPACE/k2p_diy.sh
