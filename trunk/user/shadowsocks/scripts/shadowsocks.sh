@@ -593,6 +593,7 @@ start)
 	sleep 1
 	smartdns_process=`pidof smartdns`
 	if [ -z "$smartdns_process" -a "`nvram get ss_run_mode`" = "router" ];then 
+		nvram set sdns_enable=1
 		/usr/bin/smartdns.sh start &
 	fi
 	;;
@@ -611,6 +612,7 @@ EOF
 		/sbin/restart_dhcpd
 		logger -t "SS" "添加DNS转发到$sdns_port端口"
 	else
+		nvram set sdns_enable=1
 		/usr/bin/smartdns.sh start &
 	fi
 	;;
