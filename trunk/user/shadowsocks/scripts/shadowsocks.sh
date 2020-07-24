@@ -590,10 +590,29 @@ ressp() {
 case $1 in
 start)
 	ssp_start
+	sleep 1
+	smartdns_process=`pidof smartdns`
+	if [ -z "$smartdns_process" -a "`nvram get ss_run_mode`" = "router" ];then 
+		/usr/bin/smartdns.sh start &
+	fi
 	;;
 stop)
 	killall -q -9 ssr-switch
 	ssp_close
+	smartdns_process=`pidof smartdns`
+	if [ -n "$smartdns_process" ];then 
+		sdns_port=`nvram get sdns_port`
+		sed -i '/no-resolv/d' /etc/storage/dnsmasq/dnsmasq.conf
+		sed -i '/server=127.0.0.1/d' /etc/storage/dnsmasq/dnsmasq.conf
+cat >> /etc/storage/dnsmasq/dnsmasq.conf << EOF
+no-resolv
+server=127.0.0.1#$sdns_port
+EOF
+		/sbin/restart_dhcpd
+		logger -t "SS" "添加DNS转发到$sdns_port端口"
+	else
+		/usr/bin/smartdns.sh start &
+	fi
 	;;
 restart)
 	ssp_close
