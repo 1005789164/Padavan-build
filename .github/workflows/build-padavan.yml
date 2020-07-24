@@ -43,7 +43,6 @@ jobs:
     - name: Public diy
       run: |
         cd /opt/rt-n56u/trunk
-        cp -R $GITHUB_WORKSPACE/trunk/ ./
         ##################################################################################
         ###K2P
         sed -i 's/\# CONFIG_DEFAULT_5G_PROFILE is not set/CONFIG_DEFAULT_5G_PROFILE=y/g' configs/boards/K2P/kernel-3.4.x-5.0.config
@@ -63,6 +62,7 @@ jobs:
         sed -i '/\/usr\/bin\/AdGuardHome\/adguardhome.sh/a\ifeq ($(CONFIG_FIRMWARE_INCLUDE_ADGUARDHOMEBIN),y)' user/adguardhome/Makefile
         sed -i '/ifeq ($(CONFIG_FIRMWARE_INCLUDE_ADGUARDHOMEBIN),y)/a\\t$(ROMFSINST) -p +x $(THISDIR)\/AdGuardHome \/usr\/bin\/AdGuardHome\/AdGuardHome\nendif' user/adguardhome/Makefile
         ##################################################################################
+        cp -R $GITHUB_WORKSPACE/trunk/ ./
         
         mkdir -p $GITHUB_WORKSPACE/images
         chmod +x $GITHUB_WORKSPACE/k2p_diy.sh
