@@ -65,19 +65,21 @@ jobs:
         cp -Rf $GITHUB_WORKSPACE/trunk/* ./
         
         mkdir -p $GITHUB_WORKSPACE/images
-        chmod +x $GITHUB_WORKSPACE/k2p_diy.sh
-        chmod +x $GITHUB_WORKSPACE/xy_diy.sh
+        chmod +x k2p_build.sh
+        chmod +x xy_build.sh
     - name: Build Firmware K2P_nano-5.0
       if: env.K2P == 'true'
       run: |
         cd /opt/rt-n56u/trunk
-        $GITHUB_WORKSPACE/k2p_diy.sh K2P_nano-5.0
+        sudo ./k2p_build.sh K2P_nano-5.0 2
+        cp images/*.trx $GITHUB_WORKSPACE/images
     - name: Build Firmware XY-C1
       if: env.XY-C1 == 'true'
       run: |
         cd /opt/rt-n56u/trunk
         cp -f $GITHUB_WORKSPACE/XY-C1.config configs/templates
-        $GITHUB_WORKSPACE/xy_diy.sh XY-C1
+        sudo ./xy_build.sh XY-C1 1
+        cp images/*.trx $GITHUB_WORKSPACE/images
     - name: Upload to release
       uses: 1005789164/action-release@master
       with:

@@ -15,8 +15,16 @@
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=.*/CONFIG_FIRMWARE_INCLUDE_CURL=y/' .config
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_NAPT66=.*/CONFIG_FIRMWARE_INCLUDE_NAPT66=y/' .config
 	sed -i 's/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=.*/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=n/' .config
-	sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=.*/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/' .config
-	sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=y/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=.*/CONFIG_FIRMWARE_INCLUDE_IPERF3=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_NANO=.*/CONFIG_FIRMWARE_INCLUDE_NANO=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_MTR=.*/CONFIG_FIRMWARE_INCLUDE_MTR=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_SOCAT=.*/CONFIG_FIRMWARE_INCLUDE_SOCAT=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_SRELAY=.*/CONFIG_FIRMWARE_INCLUDE_SRELAY=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTOP=.*/CONFIG_FIRMWARE_INCLUDE_HTOP=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_OPENSSH=.*/CONFIG_FIRMWARE_INCLUDE_OPENSSH=n/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=.*/CONFIG_FIRMWARE_INCLUDE_DROPBEAR=y/' .config
+	sed -i 's/CONFIG_FIRMWARE_INCLUDE_DROPBEAR_FAST_CODE=.*/CONFIG_FIRMWARE_INCLUDE_DROPBEAR_FAST_CODE=y/' .config
 	#########################################################################################
 	
 	################################################################################################
@@ -41,8 +49,8 @@
 	echo "CONFIG_FIRMWARE_INCLUDE_MENTOHUST=n" >> .config #MENTOHUST
 	echo "CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=n" >> .config #SCUTCLIENT
 	echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y" >> .config #SS plus+
-	echo "CONFIG_FIRMWARE_INCLUDE_SSOBFS=n" >> .config # simple-obfs混淆插件
-	echo "CONFIG_FIRMWARE_INCLUDE_SSSERVER=y" >> .config #SS server
+	echo "CONFIG_FIRMWARE_INCLUDE_SSOBFS=y" >> .config # simple-obfs混淆插件
+	echo "CONFIG_FIRMWARE_INCLUDE_SSSERVER=n" >> .config #SS server
 	echo "CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=n" >> .config #DNSFORWARDER
 	echo "CONFIG_FIRMWARE_INCLUDE_ADBYBY=n" >> .config #adbyby plus+
 	echo "CONFIG_FIRMWARE_INCLUDE_FRPC=n" >> .config #内网穿透FRPC
@@ -51,8 +59,8 @@
 	echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=y" >> .config #阿里DDNS
 	echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y" >> .config #smartdns
 	echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN=y" >> .config #smartdns二进制文件
-	echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=n" >> .config #集成v2ray执行文件（3.8M左右)，如果不集成，会从网上下载下来执行，不影响正常使用
-	echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=n" >> .config #集成trojan执行文件(1.1M左右)，如果不集成，会从网上下载下来执行，不影响正常使用
+	echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=y" >> .config #集成v2ray执行文件（3.8M左右)，如果不集成，会从网上下载下来执行，不影响正常使用
+	echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=y" >> .config #集成trojan执行文件(1.1M左右)，如果不集成，会从网上下载下来执行，不影响正常使用
 	echo "CONFIG_FIRMWARE_INCLUDE_KOOLPROXY=n" >> .config #KP广告过滤
 	echo "CONFIG_FIRMWARE_INCLUDE_CADDY=n" >> .config #在线文件管理服务
 	echo "CONFIG_FIRMWARE_INCLUDE_CADDYBIN=n" >> .config #集成caddu执行文件，此文件有13M,请注意固件大小。如果不集成，会从网上下载下来执行，不影响正常使用
