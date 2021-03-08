@@ -15,8 +15,9 @@ on:
     types: [started]
 
 env:
+  REPO_URL: https://github.com/1005789164/rt-n56u.git
   RELEASE_TAG: Padavan-firmware
-  TNAME: K2P_nano-5.0
+  TNAME: K2P-5.0
 
 jobs:
   build:
@@ -27,29 +28,29 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
     - name: Initialization environment
-      env:
-        DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
-        cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
-        pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
+        sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        fakeroot kmod cpio git python3-docutils gettext automake autopoint \
+        texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
+        libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
     - name: Clone source code
       run: |
-        git clone --depth=1 https://github.com/hanwckf/rt-n56u.git /opt/rt-n56u
+        git clone --depth=1 $REPO_URL /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
-        pwd
-        ls -al
     - name: Build Firmware
       run: |
         cd /opt/rt-n56u/trunk/configs/templates
         if [ ! -f $TNAME.config ] ; then
-        echo "configs/templates/$TNAME.config not found "
-        exit 1
+            echo "configs/templates/$TNAME.config not found"
+            exit 1
         fi
-        sed -i 's/\# CONFIG_DEFAULT_5G_PROFILE is not set/CONFIG_DEFAULT_5G_PROFILE=y/g' /opt/rt-n56u/trunk/configs/boards/K2P/kernel-3.4.x-5.0.config
-        
+
+        #########################################################################################
+        #sed -i 's/\# CONFIG_DEFAULT_5G_PROFILE is not set/CONFIG_DEFAULT_5G_PROFILE=y/g' /opt/rt-n56u/trunk/configs/boards/K2P/kernel-3.4.x-5.0.config
+        #########################################################################################
+
         #########################################################################################
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=.*/CONFIG_FIRMWARE_INCLUDE_CURL=y/' $TNAME.config
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_NAPT66=.*/CONFIG_FIRMWARE_INCLUDE_NAPT66=y/' $TNAME.config
@@ -57,10 +58,15 @@ jobs:
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=.*/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/' $TNAME.config
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=y/' $TNAME.config
         #########################################################################################
-        
+
+        #########################################################################################
+        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y" >> $TNAME.config #smartdns
+        #########################################################################################
+
         cd /opt/rt-n56u/trunk
         sudo ./clear_tree
         sudo fakeroot ./build_firmware_modify $TNAME
+
         mkdir -p $GITHUB_WORKSPACE/images
         cp -f images/*.trx $GITHUB_WORKSPACE/images
         ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
@@ -80,7 +86,6 @@ jobs:
         cd firmware-branch
         git init
         [ -e ../images/*.trx ] && cp ../images/*.trx ./
-        ls -al
         git config --local user.email "FUCK@github.com"
         git config --local user.name "FUCK"
         git add -f ./
