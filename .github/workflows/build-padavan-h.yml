@@ -64,6 +64,7 @@ jobs:
         #########################################################################################
 
         cd /opt/rt-n56u/trunk
+        cp -f configs/templates/$TNAME.config .config
         sudo ./clear_tree
         sudo fakeroot ./build_firmware_modify $TNAME
 
