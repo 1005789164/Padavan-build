@@ -71,7 +71,7 @@ jobs:
         cp -f images/*.trx $GITHUB_WORKSPACE/images
         ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
     - name: Upload to release
-      uses: 1005789164/action-release@master
+      uses: 1005789164/action-release@js
       with:
         token: ${{ secrets.ACTION_TOKEN }}
         gzip: false
