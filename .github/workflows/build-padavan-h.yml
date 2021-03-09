@@ -16,7 +16,8 @@ on:
 
 env:
   REPO_URL: https://github.com/1005789164/rt-n56u.git
-  RELEASE_TAG: Padavan-firmware
+  REPO_BRANCH: master
+  RELEASE_TAG: Padavan-firmware-h
   TNAME: K2P-5.0
 
 jobs:
@@ -36,7 +37,7 @@ jobs:
         libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
     - name: Clone source code
       run: |
-        git clone --depth=1 $REPO_URL /opt/rt-n56u
+        git clone --depth=1 $REPO_URL --branch $REPO_BRANCH /opt/rt-n56u
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
     - name: Build Firmware
@@ -57,6 +58,13 @@ jobs:
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=.*/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=y/' $TNAME.config
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=.*/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/' $TNAME.config
         sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=.*/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_SSSERVER=.*/CONFIG_FIRMWARE_INCLUDE_SSSERVER=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_LRZSZ=.*/CONFIG_FIRMWARE_INCLUDE_LRZSZ=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTOP=.*/CONFIG_FIRMWARE_INCLUDE_HTOP=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_DUMP1090=.*/CONFIG_FIRMWARE_INCLUDE_DUMP1090=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_FRPC=.*/CONFIG_FIRMWARE_INCLUDE_FRPC=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_FRPS=.*/CONFIG_FIRMWARE_INCLUDE_FRPS=y/' $TNAME.config
         #########################################################################################
 
         #########################################################################################
@@ -78,6 +86,7 @@ jobs:
         gzip: false
         files: >
           images/*.trx
+        allow_del: true
         allow_override: true
     - name: Push firmware
       env:
@@ -91,5 +100,10 @@ jobs:
         git config --local user.name "FUCK"
         git add -f ./
         git commit -m "firmware"
-        git push --force --quiet https://${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware
+        git push --force --quiet https://${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware-h
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 7
+        keep_minimum_runs: 0
         
