@@ -9,8 +9,8 @@ on:
 #    - 'v*'
 #  branches: 
 #    - master
-#  schedule:
-#    - cron: 0 8 * * 5
+  schedule:
+    - cron: 0 23 * * 5
   watch:
     types: [started]
 
@@ -104,7 +104,7 @@ jobs:
         mkdir -p firmware-branch
         cd firmware-branch
         git init
-        [ -e ../images/*.trx ] && cp ../images/*.trx ./
+        [ "$(ls ../images)" != "" ] && cp ../images/*.trx ./
         git config --local user.email "FUCK@github.com"
         git config --local user.name "FUCK"
         git add -f ./
