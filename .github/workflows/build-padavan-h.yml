@@ -1,0 +1,119 @@
+#修改TNAME: K2P-5.0 中的K2P-5.0为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
+name: Build Padavan
+
+on:
+#  release:
+#    types: [published]
+#  push:
+#    tags:
+#    - 'v*'
+#  branches: 
+#    - master
+  schedule:
+    - cron: 0 23 * * 5
+  watch:
+    types: [started]
+
+env:
+  REPO_URL: https://github.com/1005789164/rt-n56u.git
+  REPO_BRANCH: master
+  RELEASE_TAG: Padavan-firmware-h
+  TNAME: K2P-5.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+    - name: Initialization environment
+      run: |
+        sudo apt-get update
+        sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        fakeroot kmod cpio git python3-docutils gettext automake autopoint \
+        texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
+        libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+    - name: Clone source code
+      run: |
+        git clone --depth=1 $REPO_URL --branch $REPO_BRANCH /opt/rt-n56u
+        cd /opt/rt-n56u/toolchain-mipsel
+        sh dl_toolchain.sh
+    - name: Build Firmware
+      run: |
+        cd /opt/rt-n56u/trunk/configs/templates
+        if [ ! -f $TNAME.config ] ; then
+            echo "configs/templates/$TNAME.config not found"
+            exit 1
+        fi
+
+        #########################################################################################
+        #sed -i 's/\# CONFIG_DEFAULT_5G_PROFILE is not set/CONFIG_DEFAULT_5G_PROFILE=y/g' /opt/rt-n56u/trunk/configs/boards/K2P/kernel-3.4.x-5.0.config
+        #########################################################################################
+
+        #########################################################################################
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_CURL=.*/CONFIG_FIRMWARE_INCLUDE_CURL=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_NAPT66=.*/CONFIG_FIRMWARE_INCLUDE_NAPT66=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=.*/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_IPERF3=.*/CONFIG_FIRMWARE_INCLUDE_IPERF3=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_TTYD=.*/CONFIG_FIRMWARE_INCLUDE_TTYD=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=.*/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_SSSERVER=.*/CONFIG_FIRMWARE_INCLUDE_SSSERVER=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_LRZSZ=.*/CONFIG_FIRMWARE_INCLUDE_LRZSZ=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_HTOP=.*/CONFIG_FIRMWARE_INCLUDE_HTOP=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_NANO=.*/CONFIG_FIRMWARE_INCLUDE_NANO=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_FRPC=.*/CONFIG_FIRMWARE_INCLUDE_FRPC=y/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_FRPS=.*/CONFIG_FIRMWARE_INCLUDE_FRPS=y/' $TNAME.config
+        
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=.*/CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=n/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_GDUT_DRCOM=.*/CONFIG_FIRMWARE_INCLUDE_GDUT_DRCOM=n/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_DOGCOM=.*/CONFIG_FIRMWARE_INCLUDE_DOGCOM=n/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_NJIT_CLIENT=.*/CONFIG_FIRMWARE_INCLUDE_NJIT_CLIENT=n/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_MINIEAP=.*/CONFIG_FIRMWARE_INCLUDE_MINIEAP=n/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_VLMCSD=.*/CONFIG_FIRMWARE_INCLUDE_VLMCSD=n/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_SMBD36=.*/CONFIG_FIRMWARE_INCLUDE_SMBD36=n/' $TNAME.config
+        sed -i 's/CONFIG_FIRMWARE_INCLUDE_MENTOHUST=.*/CONFIG_FIRMWARE_INCLUDE_MENTOHUST=n/' $TNAME.config
+        #########################################################################################
+
+        #########################################################################################
+        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=y" >> $TNAME.config #smartdns
+        #########################################################################################
+
+        cd /opt/rt-n56u/trunk
+        cp -f configs/templates/$TNAME.config .config
+        sudo ./clear_tree
+        sed -i "s/FIRMWARE_BUILDS_REV=.*/FIRMWARE_BUILDS_REV=`date +'%Y.%m.%d'`/" versions.inc
+        sudo fakeroot ./build_firmware_modify $TNAME
+
+        mkdir -p $GITHUB_WORKSPACE/images
+        cp -f images/*.trx $GITHUB_WORKSPACE/images
+        ls -al $GITHUB_WORKSPACE $GITHUB_WORKSPACE/images
+    - name: Upload to release
+      uses: 1005789164/action-release@js
+      with:
+        token: ${{ secrets.ACTION_TOKEN }}
+        gzip: false
+        files: >
+          images/*.trx
+        allow_del: true
+        allow_override: true
+    - name: Push firmware
+      env:
+        PUSH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+      run: |
+        mkdir -p firmware-branch
+        cd firmware-branch
+        git init
+        [ "$(ls ../images)" != "" ] && cp ../images/*.trx ./
+        git config --local user.email "FUCK@github.com"
+        git config --local user.name "FUCK"
+        git add -f ./
+        git commit -m "firmware"
+        git push --force --quiet https://${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware-h
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 7
+        keep_minimum_runs: 0
+        

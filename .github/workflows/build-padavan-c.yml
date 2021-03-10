@@ -1,0 +1,87 @@
+#修改TNAME: K2P-5.0 中的K2P-5.0为你需要编译的型号，注意名称要与configs/templates/目录下的名字相同
+name: Build Padavan
+
+on:
+#  release:
+#    types: [published]
+#  push:
+#    tags:
+#    - 'v*'
+#  branches: 
+#    - master
+  schedule:
+    - cron: 0 23 * * 5
+  watch:
+    types: [started]
+
+env:
+  REPO_URL: https://github.com/chongshengB/rt-n56u.git
+  REPO_BRANCH: master
+  RELEASE_TAG: Padavan-firmware-c
+  K2P: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+    - name: Initialization environment
+      run: |
+        sudo apt-get update
+        sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
+        fakeroot kmod cpio git python3-docutils gettext automake autopoint \
+        texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
+        libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+    - name: Clone source code
+      run: |
+        git clone --depth=1 $REPO_URL --branch $REPO_BRANCH /opt/rt-n56u
+        cd /opt/rt-n56u/toolchain-mipsel
+        sh dl_toolchain.sh
+    - name: Public diy
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/images
+        
+        chmod +x k2p_build.sh
+        
+        cd /opt/rt-n56u/trunk
+        sed -i "s/FIRMWARE_BUILDS_REV=.*/FIRMWARE_BUILDS_REV=`date +'%Y.%m.%d'`/" versions.inc
+    - name: Build Firmware K2P
+      if: env.K2P == 'true'
+      run: |
+        cd /opt/rt-n56u/trunk
+        sudo $GITHUB_WORKSPACE/k2p_build.sh K2P_nano-5.0 2
+        cp images/*.trx $GITHUB_WORKSPACE/images
+    - name: Build Firmware Other
+      run: |
+        #如上
+    - name: Upload to release
+      uses: 1005789164/action-release@js
+      with:
+        token: ${{ secrets.ACTION_TOKEN }}
+        gzip: false
+        files: >
+          images/*.trx
+        allow_del: true
+        allow_override: true
+    - name: Push firmware
+      env:
+        PUSH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+      run: |
+        mkdir -p firmware-branch
+        cd firmware-branch
+        git init
+        [ "$(ls ../images)" != "" ] && cp ../images/*.trx ./
+        git config --local user.email "FUCK@github.com"
+        git config --local user.name "FUCK"
+        git add -f ./
+        git commit -m "firmware"
+        git push --force --quiet https://${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:firmware-c
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 7
+        keep_minimum_runs: 0
+        
