@@ -83,7 +83,7 @@ jobs:
         cd /opt/rt-n56u/trunk
         cp -f configs/templates/$TNAME.config .config
         sudo ./clear_tree
-        sed -i "s/FIRMWARE_BUILDS_REV=.*/FIRMWARE_BUILDS_REV=`date +'%Y.%m.%d'`/" versions.inc
+        sed -i "s/FIRMWARE_BUILDS_REV=.*/FIRMWARE_BUILDS_REV=`date +'%Y%m%d'`/" versions.inc
         sudo fakeroot ./build_firmware_modify $TNAME
 
         mkdir -p $GITHUB_WORKSPACE/images

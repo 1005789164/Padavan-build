@@ -47,7 +47,7 @@ jobs:
         chmod +x k2p_build.sh
         
         cd /opt/rt-n56u/trunk
-        sed -i "s/FIRMWARE_BUILDS_REV=.*/FIRMWARE_BUILDS_REV=`date +'%Y.%m.%d'`/" versions.inc
+        sed -i "s/FIRMWARE_BUILDS_REV=.*/FIRMWARE_BUILDS_REV=`date +'%Y%m%d'`/" versions.inc
     - name: Build Firmware K2P
       if: env.K2P == 'true'
       run: |
